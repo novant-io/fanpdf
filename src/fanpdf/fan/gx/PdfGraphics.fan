@@ -38,15 +38,20 @@ class PdfGraphics : Graphics
 
   ** Convenience for setting paint to a solid color.
   override Color color := Color.black
+  {
+    set
+    {
+      &color = it
+      paint = it
+    }
+  }
 
   ** Current paint defines how text and shapes are stroked and filled.
   override Paint paint := Color.black
   {
     set
     {
-      // TODO FIXIT
-      if (it isnot Color) throw ArgErr("Only color supported")
-      Color c := it
+      c := it.asColorPaint
       r := c.r.toFloat / 255f
       g := c.g.toFloat / 255f
       b := c.b.toFloat / 255f

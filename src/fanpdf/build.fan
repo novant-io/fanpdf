@@ -8,7 +8,7 @@ class Build : build::BuildPod
   {
     podName = "fanpdf"
     summary = "Fantom library for creating PDF documents"
-    version = Version("0.2")
+    version = Version("0.1")
     meta = [
       "org.name":     "Novant",
       "org.uri":      "https://novant.io/",
