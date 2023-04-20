@@ -39,8 +39,8 @@ class PdfDoc
     // TODO FIXIT: not sure how this works yet
     f(catalog)
     f(catalog.pages)
-    catalog.pages.res.each |r| { f(r) }
-    catalog.pages.list.each |p|
+    catalog.pages.fontList.each |r| { f(r) }
+    catalog.pages.pageList.each |p|
     {
       p.content.each |c| { f(c) }
       f(p)

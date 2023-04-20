@@ -109,10 +109,16 @@ class PdfFont : PdfDict
   new make(Str name := "Helvetica")
   {
     // TODO FIXIT
-    // /FO
+    this.name = name
     this.set("BaseFont", "/${name}")
     this.set("Subtype",  "/Type1")
   }
 
+  ** Font name.
+  const Str name
+
   override const Str? type := "Font"
+
+  // unique id font /PageTree /Fonts dict
+  internal Str? id
 }

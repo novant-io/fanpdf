@@ -15,17 +15,49 @@ using graphics
 ** PdfPageTree manages the list of pages in a `PdfCatalog`.
 class PdfPageTree : PdfDict
 {
+
+//////////////////////////////////////////////////////////////////////////
+// Pages
+//////////////////////////////////////////////////////////////////////////
+
   ** Add a new page to tree.
   PdfPage addPage(PdfPage? page := null)
   {
     p := page ?: PdfPage()
     p.parent = this
-    list.add(p)
+    pageList.add(p)
     return p
   }
 
-  ** List of resources common to all pages.
-  PdfObj[] res := [,]
+//////////////////////////////////////////////////////////////////////////
+// Fonts
+//////////////////////////////////////////////////////////////////////////
+
+  ** Add a font resource to tree.
+  PdfFont addFont(PdfFont font)
+  {
+    font.id = "F${fontList.size}"
+    fontList.add(font)
+    return font
+  }
+
+  ** Get a font added by `addFont` or throw 'ArgErr' if not found.
+  internal PdfFont getFont(Str name)
+  {
+    fontList.find |f| { f.name == name } ?: throw ArgErr("Font not added '${name}'")
+  }
+
+  ** Create a /Font dictionary instance.
+  private PdfDict fontDict()
+  {
+    fonts := PdfDict()
+    fontList.each |f| { fonts[f.id] = f.ref }
+    return fonts
+  }
+
+//////////////////////////////////////////////////////////////////////////
+// PdfDict
+//////////////////////////////////////////////////////////////////////////
 
   override const Str? type := "Pages"
 
@@ -33,30 +65,26 @@ class PdfPageTree : PdfDict
   {
     // create child ref lis
     refs := PdfArray()
-    list.each |p| { refs.add(p.ref) }
+    pageList.each |p| { refs.add(p.ref) }
 
     // create resource dict
-    fonts := PdfDict()
-    res.each |r,i|
-    {
-      // TODO FXIIT; how does naming work?
-      fonts["F${i}"] = r.ref
-    }
-    resd := PdfDict()
-    resd["Fonts"] = fonts
+    res := PdfDict()
+    res["Font"] = fontDict
 
     // computed entries
-    f(list.size, "Count")
+    f(pageList.size, "Count")
     f(refs, "Kids")
-    f(resd, "Resources")
+    f(res, "Resources")
 
     // delegate to parent impl
     super.each(f)
   }
 
-  // refrence to parent catalog
-  internal PdfCatalog? catalog
+//////////////////////////////////////////////////////////////////////////
+// Fields
+//////////////////////////////////////////////////////////////////////////
 
-  // List of pages in this pagetree
-  internal PdfPage[] list := [,]
+  internal PdfCatalog? catalog        // reference to parent catalog
+  internal PdfPage[] pageList := [,]  // page list
+  internal PdfFont[] fontList := [,]  // font list
 }

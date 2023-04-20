@@ -18,6 +18,7 @@ class PdfTest
   {
     doc  := PdfDoc()
     page := doc.catalog.pages.addPage
+    font := doc.catalog.pages.addFont(PdfFont("Helvetica"))
 
     gx := PdfGraphics(page)
     gx.color = Color("#f2f2f2")
@@ -27,8 +28,12 @@ class PdfTest
 
     gx.color = Color("#f00")
     gx.drawLine(46f, 46f, doc.pageSize.w-46f, doc.pageSize.h-46f)
-    page.addContent(gx.toPdfObj)
 
+    // gx.font = Font("12pt Comic Sans")
+    gx.color = Color("#00f")
+    gx.drawText("Hello, World", 100f, 100f)
+
+    page.addContent(gx.toPdfObj)
     out := Env.cur.out
     PdfWriter(doc, out).writeDoc.close
   }
