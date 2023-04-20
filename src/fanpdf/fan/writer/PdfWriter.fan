@@ -106,6 +106,7 @@ class PdfWriter
     if (val == null)      return w("null")
     if (val is PdfRef)    return writeRef(val)
     if (val is PdfArray)  return writeArray(val)
+    if (val is PdfImage)  return writeImage(val) // must be before PdfDict
     if (val is PdfDict)   return writeDict(val)
     if (val is PdfRect)   return writeRect(val)
     if (val is PdfStream) return writeStream(val)
@@ -162,6 +163,16 @@ class PdfWriter
     w("<< /Length ${stream.text.size} >>\n")
     w("stream\n")
     w(stream.text)
+    w("\nendstream")
+    return this
+  }
+
+  ** Write an image object.
+  private This writeImage(PdfImage img)
+  {
+    writeDict(img)
+    w("\nstream\n")
+    for (i := 0; i<img.stream.size; i++) write(img.stream[i])
     w("\nendstream")
     return this
   }

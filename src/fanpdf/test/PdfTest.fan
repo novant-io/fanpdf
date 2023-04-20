@@ -33,6 +33,11 @@ class PdfTest
     gx.color = Color("#00f")
     gx.drawText("Hello, World", 100f, 100f)
 
+    png := Env.cur.workDir + `src/fanpdf/doc/icon.png`
+    img := GraphicsEnv.cur.image(png.uri)
+    doc.catalog.pages.addImage(PdfImage(img))
+    gx.drawImage(img, 200f, 200f)
+
     page.addContent(gx.toPdfObj)
 
     out := Env.cur.out

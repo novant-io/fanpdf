@@ -117,13 +117,22 @@ class PdfGraphics : Graphics
     return this
   }
 
+  ** Draw an image.
+  override This drawImage(Image img, Float x, Float y, Float w := img.w(), Float h := img.h())
+  {
+    // TODO FIXIT
+    // this.w("q ${w} 0 0 -${h} ${x} ${y+h} cm /IM0 Do G\n")
+    this.w("q 1 0 0 1 ${x} ${py(y)} cm /Img0 Do G\n")
+    return this
+  }
+
   // TODO FIXIT
 
   override Stroke stroke := Stroke.defVal
   override Float alpha   := 1f
   override This clipRect(Float x, Float y, Float w, Float h) { throw Err() }
   override Void dispose() { throw Err() }
-  override This drawImage(Image img, Float x, Float y, Float w := img.w(), Float h := img.h()) { throw Err() }
+
   override This drawImageRegion(Image img, Rect src, Rect dst) { throw Err() }
   override This drawRoundRect(Float x, Float y, Float w, Float h, Float wArc, Float hArc) { throw Err() }
   override This fillRoundRect(Float x, Float y, Float w, Float h, Float wArc, Float hArc) { throw Err() }

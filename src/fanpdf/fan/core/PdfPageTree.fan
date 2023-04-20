@@ -50,9 +50,29 @@ class PdfPageTree : PdfDict
   ** Create a /Font dictionary instance.
   private PdfDict fontDict()
   {
-    fonts := PdfDict()
-    fontList.each |f| { fonts[f.id] = f.ref }
-    return fonts
+    dict := PdfDict()
+    fontList.each |f| { dict[f.id] = f.ref }
+    return dict
+  }
+
+//////////////////////////////////////////////////////////////////////////
+// Images
+//////////////////////////////////////////////////////////////////////////
+
+  ** Add an image resource to tree.
+  PdfImage addImage(PdfImage img)
+  {
+    img.id = "Img${imgList.size}"
+    imgList.add(img)
+    return img
+  }
+
+  ** Create a /XObject dictionary instance.
+  private PdfDict imgDict()
+  {
+    dict := PdfDict()
+    imgList.each |r| { dict[r.id] = r.ref }
+    return dict
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -70,6 +90,7 @@ class PdfPageTree : PdfDict
     // create resource dict
     res := PdfDict()
     res["Font"] = fontDict
+    res["XObject"] = imgDict
 
     // computed entries
     f(pageList.size, "Count")
@@ -86,5 +107,6 @@ class PdfPageTree : PdfDict
 
   internal PdfCatalog? catalog        // reference to parent catalog
   internal PdfPage[] pageList := [,]  // page list
-  internal PdfFont[] fontList := [,]  // font list
+  internal PdfFont[] fontList := [,]  // font resource list
+  internal PdfImage[] imgList := [,]  // image resource list
 }

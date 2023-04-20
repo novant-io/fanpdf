@@ -119,6 +119,58 @@ class PdfFont : PdfDict
 
   override const Str? type := "Font"
 
-  // unique id font /PageTree /Fonts dict
+  // unique id font /PageTree /Font dict
   internal Str? id
+}
+
+*************************************************************************
+** PdfImage
+*************************************************************************
+
+class PdfImage : PdfDict
+{
+  ** Construct a image.
+  new make(Image img)
+  {
+    // sanity check
+    if (!img.isLoaded) throw ArgErr("Image not loaded")
+
+    this.img = img
+    this.set("Subtype",    "/Image")
+    this.set("Width",      img.size.w.toInt)
+    this.set("Height",     img.size.h.toInt)
+    this.set("ColorSpace", colorSpace)
+    this.set("BitsPerComponent", img["colorSpaceBits"])
+
+    // PNG
+    this.set("Filter", "/DCTDecode")
+  }
+
+  ** Image stream contents.
+  Buf stream() { img.imgData }
+
+  override const Str? type := "XObject"
+
+  override Void each(|Obj?,Str| f)
+  {
+    super.each(f)
+    f(stream.size, "Length")
+  }
+
+  ** Get color space for image.
+  private Str colorSpace()
+  {
+    cs := img["colorSpace"]
+    switch(cs)
+    {
+      case "Gray":  return "DeviceGray"
+      case "RGB":   return "DeviceRGB"
+      case "YCbCr": return "DeviceRGB"
+      case "CMYK":  return "DeviceCMYK"
+      default: throw ArgErr("Unsupported color space: ${cs}")
+    }
+  }
+
+  internal Str? id       // unique img id /PageTree /XObject dict
+  private PngImage img   // backing instance
 }
