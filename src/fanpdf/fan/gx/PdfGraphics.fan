@@ -28,6 +28,7 @@ class PdfGraphics : Graphics
 
     // init fields with setter to render state
     this.paint = Color.black
+    // TODO: how does this work with PageList.addFont?
     this.font  = Font.fromStr("12pt Helvetica")
   }
 
