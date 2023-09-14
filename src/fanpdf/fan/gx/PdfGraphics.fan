@@ -76,7 +76,8 @@ class PdfGraphics : Graphics
     set
     {
       // get or add font
-      pf := doc.catalog.pages.font(it.name)
+      fk := PdfGxFont.toKey(it)
+      pf := doc.catalog.pages.font(fk)
       if (pf == null) doc.catalog.pages.addFont(pf = PdfGxFont.encodeFont(it))
       w("BT /${pf.id} ${it.size} Tf ET\n")
       &font = it

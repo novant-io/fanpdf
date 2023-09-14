@@ -120,7 +120,6 @@ class PdfFont : PdfDict
   ** Construct a new font.
   new make(Str name)
   {
-    // TODO FIXIT
     this.name = name
     this.set("Type", "/Font")
     this.set("BaseFont", "/${name}")

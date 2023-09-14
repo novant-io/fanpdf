@@ -15,16 +15,21 @@ using util
 
 internal const class PdfGxFont
 {
+  ** Get keyed font name used for 'PdfFont.name'.
+  static Str toKey(Font f)
+  {
+    // TODO: for now only Helvetica
+    key := "Helvetica"
+    if (f.weight.num > 500) key += "-Bold"
+    return key
+  }
+
   ** Encode Font into one PdfFont object.
   static PdfFont encodeFont(Font font)
   {
-    name := toFontName(font)
+    name := toKey(font)
     return PdfFont(name)
   }
 
-  private static Str toFontName(Font font)
-  {
-    // TODO: for now only Helvetica
-    return "Helvetica"
-  }
+
 }

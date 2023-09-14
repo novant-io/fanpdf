@@ -33,8 +33,13 @@ class PdfTest
     gx.drawLine(46f, 46f, 400f, 400f)
 
     // gx.font = Font("12pt Comic Sans")
-    gx.color = Color("#00f")
+    gx.font = Font("10pt Helvetica")
+    gx.color = Color("#94a3b8")
     gx.drawText("Hello, World", 100f, 100f)
+
+    gx.font = Font("bold 12pt Helvetica")
+    gx.color = Color("#6366f1")
+    gx.drawText("How are you doing?", 100f, 120f)
 
     png := Env.cur.workDir + `src/fanpdf/doc/icon.png`
     img := GraphicsEnv.cur.image(png.uri)
