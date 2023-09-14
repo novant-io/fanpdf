@@ -118,7 +118,7 @@ class PdfStream : PdfObj
 class PdfFont : PdfDict
 {
   ** Construct a new font.
-  new make(Str name := "Helvetica")
+  new make(Str name)
   {
     // TODO FIXIT
     this.name = name

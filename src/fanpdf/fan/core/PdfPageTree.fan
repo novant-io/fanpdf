@@ -38,25 +38,27 @@ class PdfPageTree : PdfDict
 // Fonts
 //////////////////////////////////////////////////////////////////////////
 
+  ** Get a font by name, or 'null' if not found
+  PdfFont? font(Str name) { fontMap[name] }
+
   ** Add a font resource to tree.
   PdfFont addFont(PdfFont font)
   {
-    font.id = "F${fontList.size}"
-    fontList.add(font)
-    return font
-  }
+    // check if already exists
+    if (fontMap[font.name] != null)
+      throw ArgErr("Font already exists '${font.name}'")
 
-  ** Get a font added by `addFont` or throw 'ArgErr' if not found.
-  internal PdfFont getFont(Str name)
-  {
-    fontList.find |f| { f.name == name } ?: throw ArgErr("Font not added '${name}'")
+    // add resource
+    font.id = "F${fontMap.size}"
+    fontMap.add(font.name, font)
+    return font
   }
 
   ** Create a /Font dictionary instance.
   private PdfDict fontDict()
   {
     dict := PdfDict()
-    fontList.each |f| { dict[f.id] = f.ref }
+    fontMap.each |f| { dict[f.id] = f.ref }
     return dict
   }
 
@@ -65,7 +67,7 @@ class PdfPageTree : PdfDict
 //////////////////////////////////////////////////////////////////////////
 
   ** Get image resource by uri, or 'null' if not found.
-  PdfImage? getImage(Uri uri) { imgMap[uri] }
+  PdfImage? image(Uri uri) { imgMap[uri] }
 
   ** Add an image resource to tree.
   PdfImage addImage(PdfImage img)
@@ -118,6 +120,6 @@ class PdfPageTree : PdfDict
 
   internal PdfCatalog? catalog         // reference to parent catalog
   internal PdfPage[] pageList  := [,]  // page list
-  internal PdfFont[] fontList  := [,]  // font resource list
+  internal Str:PdfFont fontMap := [:]  // font resource list
   internal Uri:PdfImage imgMap := [:]  // image resource map
 }

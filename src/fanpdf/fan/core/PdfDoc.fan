@@ -39,7 +39,7 @@ class PdfDoc
     // TODO FIXIT: not sure how this works yet
     f(catalog)
     f(catalog.pages)
-    catalog.pages.fontList.each |r| { f(r) }
+    catalog.pages.fontMap.each  |r| { f(r) }
     catalog.pages.imgMap.each   |r| { f(r) }
     catalog.pages.pageList.each |p|
     {

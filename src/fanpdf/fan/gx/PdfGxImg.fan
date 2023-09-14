@@ -13,7 +13,7 @@ using util
 ** PdfGxImg
 *************************************************************************
 
-const class PdfGxImg
+internal const class PdfGxImg
 {
   ** Encode image into one or more PdfImage objects. The first
   ** object always contains the primary raster data. If a second

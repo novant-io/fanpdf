@@ -29,7 +29,6 @@ class PdfGraphics : Graphics
 
     // init fields with setter to render state
     this.paint = Color.black
-    // TODO: how does this work with PageList.addFont?
     this.font  = Font.fromStr("12pt Helvetica")
   }
 
@@ -76,8 +75,10 @@ class PdfGraphics : Graphics
   {
     set
     {
-      f := page.parent.getFont(it.name)
-      w("BT /${f.id} ${it.size} Tf ET\n")
+      // get or add font
+      pf := doc.catalog.pages.font(it.name)
+      if (pf == null) doc.catalog.pages.addFont(pf = PdfGxFont.encodeFont(it))
+      w("BT /${pf.id} ${it.size} Tf ET\n")
       &font = it
     }
   }
@@ -121,8 +122,8 @@ class PdfGraphics : Graphics
   ** Draw an image.
   override This drawImage(Image img, Float x, Float y, Float w := img.w(), Float h := img.h())
   {
-    // add PdfImage ref image not already added
-    pdfimg := doc.catalog.pages.getImage(img.uri)
+    // add PdfImage if not already added
+    pdfimg := doc.catalog.pages.image(img.uri)
     if (pdfimg == null)
     {
       objs := PdfGxImg.encodeImage(img)
