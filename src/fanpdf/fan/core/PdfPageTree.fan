@@ -64,15 +64,19 @@ class PdfPageTree : PdfDict
 // Images
 //////////////////////////////////////////////////////////////////////////
 
+  ** Get image resource by uri, or 'null' if not found.
+  PdfImage? getImage(Uri uri) { imgMap[uri] }
+
   ** Add an image resource to tree.
   PdfImage addImage(PdfImage img)
   {
-    // TODO: for now keep this all very explicit
-    if (imgList.any |i| { i.uri == img.uri })
+    // check if already exists
+    if (imgMap[img.uri] != null)
       throw ArgErr("Image already exists '${img.uri}'")
 
-    img.id = "Img${imgList.size}"
-    imgList.add(img)
+    // add resource
+    img.id = "Img${imgMap.size}"
+    imgMap.add(img.uri, img)
     return img
   }
 
@@ -80,7 +84,7 @@ class PdfPageTree : PdfDict
   private PdfDict imgDict()
   {
     dict := PdfDict()
-    imgList.each |r| { dict[r.id] = r.ref }
+    imgMap.each |r| { dict[r.id] = r.ref }
     return dict
   }
 
@@ -112,8 +116,8 @@ class PdfPageTree : PdfDict
 // Fields
 //////////////////////////////////////////////////////////////////////////
 
-  internal PdfCatalog? catalog        // reference to parent catalog
-  internal PdfPage[] pageList := [,]  // page list
-  internal PdfFont[] fontList := [,]  // font resource list
-  internal PdfImage[] imgList := [,]  // image resource list
+  internal PdfCatalog? catalog         // reference to parent catalog
+  internal PdfPage[] pageList  := [,]  // page list
+  internal PdfFont[] fontList  := [,]  // font resource list
+  internal Uri:PdfImage imgMap := [:]  // image resource map
 }

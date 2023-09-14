@@ -122,13 +122,18 @@ class PdfGraphics : Graphics
   override This drawImage(Image img, Float x, Float y, Float w := img.w(), Float h := img.h())
   {
     // add PdfImage ref image not already added
-    objs := PdfGxImg.encodeImage(img)
-    objs.each |obj| { doc.catalog.pages.addImage(obj) }
+    pdfimg := doc.catalog.pages.getImage(img.uri)
+    if (pdfimg == null)
+    {
+      objs := PdfGxImg.encodeImage(img)
+      objs.each |obj| { doc.catalog.pages.addImage(obj) }
+      pdfimg = objs.first
+    }
 
     // render image to page
     this.w("q\n")
     this.w("${w} 0 0 ${h} ${x} ${py(y+h)} cm\n")
-    this.w("/Img0 Do\n")
+    this.w("/${pdfimg.id} Do\n")
     this.w("Q\n")
     return this
   }

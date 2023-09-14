@@ -39,6 +39,11 @@ class PdfTest
     png := Env.cur.workDir + `src/fanpdf/doc/icon.png`
     img := GraphicsEnv.cur.image(png.uri)
     gx.drawImage(img, 200f, 200f, 32f, 32f)
+    gx.drawImage(img, 232f, 232f, 32f, 32f)
+
+    png = Env.cur.workDir + `test/fanbars.png`
+    img = GraphicsEnv.cur.image(png.uri)
+    gx.drawImage(img, 264f, 264f, 32f, 32f)
 
     page.addContent(gx.toPdfObj)
 

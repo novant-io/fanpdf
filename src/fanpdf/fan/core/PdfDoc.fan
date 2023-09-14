@@ -40,7 +40,7 @@ class PdfDoc
     f(catalog)
     f(catalog.pages)
     catalog.pages.fontList.each |r| { f(r) }
-    catalog.pages.imgList.each  |r| { f(r) }
+    catalog.pages.imgMap.each   |r| { f(r) }
     catalog.pages.pageList.each |p|
     {
       p.content.each |c| { f(c) }
