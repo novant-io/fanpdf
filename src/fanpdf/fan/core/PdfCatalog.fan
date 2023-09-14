@@ -17,14 +17,13 @@ class PdfCatalog : PdfDict
 {
   new make()
   {
+    this.set("Type", "/Catalog")
     this.pages = PdfPageTree()
     this.pages.catalog = this
   }
 
   ** PageTree for this catalog.
   PdfPageTree pages { private set }
-
-  override const Str? type := "Catalog"
 
   override Void each(|Obj?,Str| f)
   {

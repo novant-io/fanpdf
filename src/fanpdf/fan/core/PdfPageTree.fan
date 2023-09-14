@@ -15,6 +15,11 @@ using graphics
 ** PdfPageTree manages the list of pages in a `PdfCatalog`.
 class PdfPageTree : PdfDict
 {
+  ** Constructor.
+  new make()
+  {
+    this.set("Type", "/Pages")
+  }
 
 //////////////////////////////////////////////////////////////////////////
 // Pages
@@ -78,8 +83,6 @@ class PdfPageTree : PdfDict
 //////////////////////////////////////////////////////////////////////////
 // PdfDict
 //////////////////////////////////////////////////////////////////////////
-
-  override const Str? type := "Pages"
 
   override Void each(|Obj?,Str| f)
   {

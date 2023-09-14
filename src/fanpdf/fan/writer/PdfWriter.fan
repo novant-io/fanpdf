@@ -125,8 +125,6 @@ class PdfWriter
   private This writeDict(PdfDict dict)
   {
     w("<<\n")
-    if (dict.type != null) w("/Type /${dict.type}\n")
-    if (dict.subtype != null) w("/Subtype /${dict.subtype}\n")
     dict.each |v,k|
     {
       write('/')

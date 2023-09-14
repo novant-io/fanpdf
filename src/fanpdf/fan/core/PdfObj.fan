@@ -45,12 +45,6 @@ class PdfArray : PdfObj
 
 class PdfDict : PdfObj
 {
-  ** Optionial dict type.
-  virtual Str? type() { null }
-
-  ** Optionial dict subtype.
-  virtual Str? subtype() { null }
-
   ** Get value for key or 'null' if not found.
   @Operator virtual Obj? get(Str key) { vals[key] }
 
@@ -60,7 +54,7 @@ class PdfDict : PdfObj
   ** Iterate name-value pairs in this dict.
   virtual Void each(|Obj?,Str| f) { vals.each(f) }
 
-  private Str:Obj? vals := [:]
+  private Str:Obj? vals := [:] { it.ordered=true }
 }
 
 *************************************************************************
@@ -113,14 +107,13 @@ class PdfFont : PdfDict
   {
     // TODO FIXIT
     this.name = name
+    this.set("Type", "/Font")
     this.set("BaseFont", "/${name}")
+    this.set("Subtype", "/Type1")
   }
 
   ** Font name.
   const Str name
-
-  override const Str? type := "Font"
-  override const Str? subtype := "Type1"
 
   // unique id font /PageTree /Font dict
   internal Str? id
@@ -141,7 +134,8 @@ class PdfImage : PdfDict
 
     this.img = image
     // TODO: just make set() ordered?
-    // this.set("Subtype",    "/Image")
+    this.set("Type",       "/XObject")
+    this.set("Subtype",    "/Image")
     this.set("Width",      img.size.w.toInt)
     this.set("Height",     img.size.h.toInt)
     this.set("ColorSpace", "/${colorSpace}")
@@ -174,9 +168,6 @@ class PdfImage : PdfDict
 
   ** Image stream contents.
   Buf? stream { private set }
-
-  override const Str? type := "XObject"
-  override const Str? subtype := "Image"
 
   override Void each(|Obj?,Str| f)
   {

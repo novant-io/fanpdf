@@ -18,6 +18,7 @@ class PdfPage : PdfDict
   ** It-block constructor.
   new make(|This|? f := null)
   {
+    this.set("Type", "/Page")
     if (f != null) f(this)
   }
 
@@ -33,8 +34,6 @@ class PdfPage : PdfDict
     content.add(obj)
     return this
   }
-
-  override const Str? type := "Page"
 
   override Void each(|Obj?,Str| f)
   {
