@@ -120,9 +120,10 @@ class PdfGraphics : Graphics
   ** Draw an image.
   override This drawImage(Image img, Float x, Float y, Float w := img.w(), Float h := img.h())
   {
-    // TODO FIXIT
-    // this.w("q ${w} 0 0 -${h} ${x} ${y+h} cm /IM0 Do G\n")
-    this.w("q 1 0 0 1 ${x} ${py(y)} cm /Img0 Do G\n")
+    this.w("q\n")
+    this.w("${w} 0 0 ${h} ${x} ${py(y+h)} cm\n")
+    this.w("/Img0 Do\n")
+    this.w("Q\n")
     return this
   }
 
@@ -136,6 +137,7 @@ class PdfGraphics : Graphics
   override This drawImageRegion(Image img, Rect src, Rect dst) { throw Err() }
   override This drawRoundRect(Float x, Float y, Float w, Float h, Float wArc, Float hArc) { throw Err() }
   override This fillRoundRect(Float x, Float y, Float w, Float h, Float wArc, Float hArc) { throw Err() }
+  override This clipRoundRect(Float x, Float y, Float w, Float h, Float wArc, Float hArc) { throw Err() }
   override FontMetrics metrics() { throw Err() }
   override GraphicsPath path() { throw Err() }
   override This pop() { throw Err() }

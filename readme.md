@@ -29,6 +29,12 @@ gx.drawLine(46f, 46f, doc.pageSize.w-46f, doc.pageSize.h-46f)
 gx.color = Color("#00f")
 gx.drawText("Hello, World", 100f, 100f)
 
+// image
+png := Env.cur.workDir + `src/fanpdf/doc/icon.png`
+img := GraphicsEnv.cur.image(png.uri)
+doc.catalog.pages.addImage(PdfImage(img))
+gx.drawImage(img, 200f, 200f, 32f, 32f)
+
 // add graphics to page
 page.addContent(gx.toPdfObj)
 

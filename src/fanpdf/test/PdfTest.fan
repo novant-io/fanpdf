@@ -29,6 +29,9 @@ class PdfTest
     gx.color = Color("#f00")
     gx.drawLine(46f, 46f, doc.pageSize.w-46f, doc.pageSize.h-46f)
 
+    gx.color = Color("#3b82f6")
+    gx.drawLine(46f, 46f, 400f, 400f)
+
     // gx.font = Font("12pt Comic Sans")
     gx.color = Color("#00f")
     gx.drawText("Hello, World", 100f, 100f)
@@ -36,7 +39,7 @@ class PdfTest
     png := Env.cur.workDir + `src/fanpdf/doc/icon.png`
     img := GraphicsEnv.cur.image(png.uri)
     doc.catalog.pages.addImage(PdfImage(img))
-    gx.drawImage(img, 200f, 200f)
+    gx.drawImage(img, 200f, 200f, 32f, 32f)
 
     page.addContent(gx.toPdfObj)
 
