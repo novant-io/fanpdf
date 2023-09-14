@@ -105,6 +105,7 @@ class PdfWriter
   {
     if (val == null)      return w("null")
     if (val is PdfRef)    return writeRef(val)
+    if (val is PdfObjRef) return writeObjRef(val)
     if (val is PdfArray)  return writeArray(val)
     if (val is PdfImage)  return writeImage(val) // must be before PdfDict
     if (val is PdfDict)   return writeDict(val)
@@ -119,6 +120,12 @@ class PdfWriter
   private This writeRef(PdfRef ref)
   {
     w("${ref.num} ${ref.gen} R")
+  }
+
+  ** Write an indirect reference.
+  private This writeObjRef(PdfObjRef objRef)
+  {
+    writeRef(objRef.targetRef)
   }
 
   ** Write a dictionary object.

@@ -123,7 +123,7 @@ class PdfGraphics : Graphics
   {
     // add PdfImage ref image not already added
     objs := PdfGxImg.encodeImage(img)
-    doc.catalog.pages.addImage(objs.first)
+    objs.each |obj| { doc.catalog.pages.addImage(obj) }
 
     // render image to page
     this.w("q\n")

@@ -19,6 +19,21 @@ abstract class PdfObj
 }
 
 *************************************************************************
+** PdfObjRef
+*************************************************************************
+
+** PdfObjRef is used to late bind refs before refs have been set.
+class PdfObjRef : PdfObj
+{
+  new make(PdfObj target) { this.target = target }
+
+  ** Get ref of target object.
+  internal PdfRef targetRef() { target.ref }
+
+  private PdfObj target
+}
+
+*************************************************************************
 ** PdfArray
 *************************************************************************
 

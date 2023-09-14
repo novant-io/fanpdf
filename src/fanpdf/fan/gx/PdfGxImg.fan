@@ -59,7 +59,7 @@ const class PdfGxImg
     }
 
     // base palete or rgb data
-    objs.add(PdfImage(png.uri, data.first) {
+    objs.add(PdfImage(png.uri, data[0]) {
       it.set("Width",  iw)
       it.set("Height", ih)
       it.set("ColorSpace", "/${space}")
@@ -67,17 +67,22 @@ const class PdfGxImg
       it.set("Filter", "/FlateDecode")
     })
 
-    // TODO: alpha
-    //   doc.add(BufStream(buf, [
-    //     "Type":    PdfName("XObject"),
-    //     "Subtype": PdfName("Image"),
-    //     "Width":   width,
-    //     "Height":  height,
-    //     "BitsPerComponent": 8,
-    //     "Filter":     PdfName("FlateDecode"),
-    //     "ColorSpace": PdfName("DeviceGray"),
-    //     "Decode": [0, 1],
-    //   ]))
+    // alpha mask
+    if (data.size > 1)
+    {
+      auri  := `${png.uri}#alpha`
+      alpha := PdfImage(auri, data[1]) {
+        it.set("Width",  iw)
+        it.set("Height", ih)
+        it.set("BitsPerComponent", 8)
+        it.set("Filter",     "/FlateDecode")
+        it.set("ColorSpace", "/DeviceGray")
+        it.set("Decode",     PdfArray().add(0).add(1))
+      }
+      rgb := objs.first
+      rgb.set("SMask", PdfObjRef(alpha))
+      objs.add(alpha)
+    }
 
     return objs
   }
