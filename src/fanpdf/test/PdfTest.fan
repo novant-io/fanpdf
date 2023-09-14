@@ -20,7 +20,7 @@ class PdfTest
     page := doc.catalog.pages.addPage
     doc.catalog.pages.addFont(PdfFont("Helvetica"))
 
-    gx := PdfGraphics(page)
+    gx := PdfGraphics(doc, page)
     gx.color = Color("#f2f2f2")
     gx.fillRect(36f, 36f, doc.pageSize.w-72, doc.pageSize.h-72f)
     gx.color = Color("#d9d9d9")
@@ -38,7 +38,6 @@ class PdfTest
 
     png := Env.cur.workDir + `src/fanpdf/doc/icon.png`
     img := GraphicsEnv.cur.image(png.uri)
-    doc.catalog.pages.addImage(PdfImage(img))
     gx.drawImage(img, 200f, 200f, 32f, 32f)
 
     page.addContent(gx.toPdfObj)

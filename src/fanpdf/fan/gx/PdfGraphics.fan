@@ -21,8 +21,9 @@ class PdfGraphics : Graphics
 //////////////////////////////////////////////////////////////////////////
 
   ** Create a new graphics context for given `PdfPage`.
-  new make(PdfPage page)
+  new make(PdfDoc doc, PdfPage page)
   {
+    this.doc  = doc
     this.page = page
     this.size = page.resolvePageSize
 
@@ -120,6 +121,11 @@ class PdfGraphics : Graphics
   ** Draw an image.
   override This drawImage(Image img, Float x, Float y, Float w := img.w(), Float h := img.h())
   {
+    // add PdfImage ref image not already added
+    objs := PdfGxImg.encodeImage(img)
+    doc.catalog.pages.addImage(objs.first)
+
+    // render image to page
     this.w("q\n")
     this.w("${w} 0 0 ${h} ${x} ${py(y+h)} cm\n")
     this.w("/Img0 Do\n")
@@ -151,6 +157,7 @@ class PdfGraphics : Graphics
   ** Write string to stream buf.
   private This w(Str s) { buf.add(s); return this }
 
+  private PdfDoc doc               // parent doc instance
   private PdfPage page             // parent page instance
   private StrBuf buf := StrBuf()   // backing Stream contents
 }

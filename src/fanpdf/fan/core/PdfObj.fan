@@ -126,48 +126,19 @@ class PdfFont : PdfDict
 class PdfImage : PdfDict
 {
   ** Construct a image.
-  new make(Image image)
+  new make(Uri uri, Buf stream)
   {
-    // sanity checks
-    if (image isnot PngImage) throw ArgErr("Only PNG supported")
-    if (!image.isLoaded) throw ArgErr("Image not loaded")
-
-    this.img = image
-    // TODO: just make set() ordered?
-    this.set("Type",       "/XObject")
-    this.set("Subtype",    "/Image")
-    this.set("Width",      img.size.w.toInt)
-    this.set("Height",     img.size.h.toInt)
-    this.set("ColorSpace", "/${colorSpace}")
-    this.set("BitsPerComponent", img["colorSpaceBits"])
-    this.stream = img.imgData
-
-    this.set("Filter", "/FlateDecode")
-    switch (img.colorType)
-    {
-      case 0:
-        // grayscale (no alpha)
-        throw Err("Not yet implemented")
-
-      case 2:
-        // 8/16-bit RGB (no alpha)
-        dumb := 0  // since we can't break
-
-      case 3:
-        // indexed
-        throw Err("Not yet implemented")
-
-      case 4:
-        // grayscale w/ alpha
-
-      case 6:
-        // 8/16-bit RGB w/ alpha
-        splitAlpha
-    }
+    this.uri = uri
+    this.stream = stream
+    this.set("Type",    "/XObject")
+    this.set("Subtype", "/Image")
   }
 
+  ** Unique uri for this image.
+  const Uri uri
+
   ** Image stream contents.
-  Buf? stream { private set }
+  const Buf stream
 
   override Void each(|Obj?,Str| f)
   {
@@ -175,57 +146,5 @@ class PdfImage : PdfDict
     f(stream.size, "Length")
   }
 
-  ** Get color space for image.
-  private Str colorSpace()
-  {
-    cs := img["colorSpace"]
-    switch(cs)
-    {
-      case "Gray":  return "DeviceGray"
-      case "RGB":   return "DeviceRGB"
-      case "YCbCr": return "DeviceRGB"
-      case "CMYK":  return "DeviceCMYK"
-      default: throw ArgErr("Unsupported color space: ${cs}")
-    }
-  }
-
-  ** Split alpha channel from RBG into separate smask object.
-  private Void splitAlpha()
-  {
-    pixels     := img.pixels
-    pixelBytes := img.pixelBits / 8
-    numPixels  := img.size.w.toInt * img.size.h.toInt
-    data       := Buf(numPixels * pixelBytes)
-    alpha      := Buf(numPixels)
-
-    i   := 0
-    len := pixels.size
-    while (i < len)
-    {
-      data.write(pixels[i++])
-      data.write(pixels[i++])
-      data.write(pixels[i++])
-      alpha.write(pixels[i++])
-    }
-
-    // set new image data with alpha channel removed
-    this.stream = deflate(data.flip)
-
-    // // add smask for alpha channel
-    // smask := deflate(alpha.flip)
-    // this.set("SMask", createSMask(smask)
-  }
-
-  ** Compress buf contents using DEFLATE algorithm.
-  private Buf deflate(Buf contents)
-  {
-    buf   := Buf()
-    flate := Zip.deflateOutStream(buf.out)
-    contents.in.pipe(flate)
-    flate.flush.close
-    return buf.flip
-  }
-
-  internal Str? id       // unique img id /PageTree /XObject dict
-  private PngImage img   // backing instance
+  internal Str? id  // unique img id /PageTree /XObject dict
 }

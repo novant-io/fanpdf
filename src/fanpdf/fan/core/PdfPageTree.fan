@@ -67,6 +67,10 @@ class PdfPageTree : PdfDict
   ** Add an image resource to tree.
   PdfImage addImage(PdfImage img)
   {
+    // TODO: for now keep this all very explicit
+    if (imgList.any |i| { i.uri == img.uri })
+      throw ArgErr("Image already exists '${img.uri}'")
+
     img.id = "Img${imgList.size}"
     imgList.add(img)
     return img
