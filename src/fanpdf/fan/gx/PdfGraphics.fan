@@ -55,6 +55,17 @@ class PdfGraphics : Graphics
     }
   }
 
+  ** Current stroke defines how the shapes are outlined.
+  override Stroke stroke := Stroke.defVal
+  {
+    set
+    {
+      &stroke = it
+      w("${it.width} w\n")
+    }
+  }
+
+
   ** Current paint defines how text and shapes are stroked and filled.
   override Paint paint
   {
@@ -142,7 +153,6 @@ class PdfGraphics : Graphics
 
   // TODO FIXIT
 
-  override Stroke stroke := Stroke.defVal
   override Float alpha   := 1f
   override This clipRect(Float x, Float y, Float w, Float h) { throw Err() }
   override Void dispose() { throw Err() }
