@@ -151,6 +151,13 @@ class PdfGraphics : Graphics
     return this
   }
 
+  ** Get 'FontMetrics' for current font.
+  override FontMetrics metrics()
+  {
+    font.metrics(deviceCx)
+  }
+
+
   // TODO FIXIT
 
   override Float alpha   := 1f
@@ -161,7 +168,6 @@ class PdfGraphics : Graphics
   override This drawRoundRect(Float x, Float y, Float w, Float h, Float wArc, Float hArc) { throw Err() }
   override This fillRoundRect(Float x, Float y, Float w, Float h, Float wArc, Float hArc) { throw Err() }
   override This clipRoundRect(Float x, Float y, Float w, Float h, Float wArc, Float hArc) { throw Err() }
-  override FontMetrics metrics() { throw Err() }
   override GraphicsPath path() { throw Err() }
   override This pop() { throw Err() }
   override This push(Rect? r := null) { throw Err() }
@@ -173,6 +179,8 @@ class PdfGraphics : Graphics
 
   ** Write string to stream buf.
   private This w(Str s) { buf.add(s); return this }
+
+  private DeviceContext deviceCx := DeviceContext(72f)
 
   private PdfDoc doc               // parent doc instance
   private PdfPage page             // parent page instance
