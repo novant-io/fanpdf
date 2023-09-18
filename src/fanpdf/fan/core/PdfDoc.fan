@@ -27,9 +27,6 @@ class PdfDoc
   ** Default page size in 1/72 inch points.
   const Size pageSize := Size(612, 792)
 
-  ** Default page margins in 1/72 inch points.
-  const Insets pageMargins := Insets(36, 36, 36, 36)
-
   ** The root document catalog.
   PdfCatalog catalog { private set }
 
