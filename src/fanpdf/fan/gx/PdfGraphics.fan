@@ -95,6 +95,42 @@ class PdfGraphics : Graphics
     }
   }
 
+  ** Push a new graphics state onto stack.
+  override This push(Rect? r := null)
+  {
+    this.w("q\n")
+    if (r != null)
+    {
+      translate(r.x, r.y)
+      clipRect(0f, 0f, r.w, r.h)
+    }
+    return this
+  }
+
+  ** Pop last graphics state of stack.
+  override This pop()
+  {
+    this.w("Q\n")
+  }
+
+  ** Convenience to clip the given the rectangle.
+  override This clipRect(Float x, Float y, Float w, Float h)
+  {
+    this.w("${x} ${py(y)} m ")
+    this.w("${x+w} ${py(y)} l ")
+    this.w("${x+w} ${py(y+h)} l ")
+    this.w("${x} ${py(y+h)} l ")
+    this.w(" W n\n")
+    return this
+  }
+
+  ** Translate the coordinate system to the new origin.
+  override This translate(Float x, Float y)
+  {
+    this.w("1 0 0 1 ${x} -${y} cm\n")
+    return this
+  }
+
   ** Draw a line.
   override This drawLine(Float x1, Float y1, Float x2, Float y2)
   {
@@ -161,7 +197,6 @@ class PdfGraphics : Graphics
   // TODO FIXIT
 
   override Float alpha   := 1f
-  override This clipRect(Float x, Float y, Float w, Float h) { throw Err() }
   override Void dispose() { throw Err() }
 
   override This drawImageRegion(Image img, Rect src, Rect dst) { throw Err() }
@@ -169,10 +204,7 @@ class PdfGraphics : Graphics
   override This fillRoundRect(Float x, Float y, Float w, Float h, Float wArc, Float hArc) { throw Err() }
   override This clipRoundRect(Float x, Float y, Float w, Float h, Float wArc, Float hArc) { throw Err() }
   override GraphicsPath path() { throw Err() }
-  override This pop() { throw Err() }
-  override This push(Rect? r := null) { throw Err() }
   override This transform(Transform transform) { throw Err() }
-  override This translate(Float x, Float y) { throw Err() }
 
   ** Get y value relative to pdf page (which is inverted from gx space).
   private Float py(Float v) { size.h - v }
