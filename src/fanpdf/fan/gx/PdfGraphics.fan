@@ -38,7 +38,7 @@ class PdfGraphics : Graphics
   ** Convert current instance state to a `PdfObj`.
   PdfObj toPdfObj()
   {
-    PdfStream(buf.toStr)
+    PdfStrStream(buf.toStr)
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -175,8 +175,12 @@ class PdfGraphics : Graphics
     if (pdfimg == null)
     {
       objs := PdfGxImg.encodeImage(img)
-      objs.each |obj| { doc.catalog.pages.addImage(obj) }
-      pdfimg = objs.first
+      objs.each |obj|
+      {
+        if (obj is PdfImage) doc.catalog.pages.addImage(obj)
+        else doc.catalog.pages.addMisc(obj)
+      }
+      pdfimg = objs.findType(PdfImage#).first
     }
 
     // render image to page

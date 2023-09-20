@@ -91,12 +91,21 @@ class PdfPageTree : PdfDict
   }
 
 //////////////////////////////////////////////////////////////////////////
+// Misg
+//////////////////////////////////////////////////////////////////////////
+
+  Void addMisc(PdfObj obj)
+  {
+    misc.add(obj)
+  }
+
+//////////////////////////////////////////////////////////////////////////
 // PdfDict
 //////////////////////////////////////////////////////////////////////////
 
   override Void each(|Obj?,Str| f)
   {
-    // create child ref lis
+    // create child ref ids
     refs := PdfArray()
     pageList.each |p| { refs.add(p.ref) }
 
@@ -122,4 +131,5 @@ class PdfPageTree : PdfDict
   internal PdfPage[] pageList  := [,]  // page list
   internal Str:PdfFont fontMap := [:]  // font resource list
   internal Uri:PdfImage imgMap := [:]  // image resource map
+  internal PdfObj[] misc       := [,]  // misc object list
 }

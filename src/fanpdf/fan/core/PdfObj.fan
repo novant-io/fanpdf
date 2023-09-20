@@ -101,14 +101,25 @@ class PdfRect : PdfObj
 }
 
 *************************************************************************
-** PdfStream
+** PdfStrStream
 *************************************************************************
 
-class PdfStream : PdfObj
+class PdfStrStream : PdfObj
 {
   new make(Str text) { this.text = text }
 
-  Str text
+  const Str text
+}
+
+*************************************************************************
+** PdfBufStream
+*************************************************************************
+
+class PdfBufStream : PdfObj
+{
+  new make(Buf buf) { this.buf = buf }
+
+  const Buf buf
 }
 
 *************************************************************************

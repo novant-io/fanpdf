@@ -15,10 +15,11 @@ using util
 
 internal const class PdfGxImg
 {
-  ** Encode image into one or more PdfImage objects. The first
-  ** object always contains the primary raster data. If a second
-  ** object exists, it contains the alpha channel mask for image.
-  static PdfImage[] encodeImage(Image img)
+  ** Encode image into one or more PdfObj objects. The first
+  ** object of type PdfImage always contains the primary raster
+  ** data. If a second PdfImage object exists, it contains the
+  ** alpha channel mask for image.
+  static PdfObj[] encodeImage(Image img)
   {
     // sanity check we have backing data
     if (!img.isLoaded) throw ArgErr("Image not loaded")
@@ -27,12 +28,14 @@ internal const class PdfGxImg
     if (img isnot PngImage) throw ArgErr("Only PNG supported")
     PngImage png := img
 
-    objs  := PdfImage[,]
+    objs  := PdfObj[,]
     bits  := png["colorSpaceBits"]
     space := colorSpace(png)
     iw    := png.size.w.toInt
     ih    := png.size.h.toInt
-    data  := Buf[,]
+    Buf? dataPixels
+    Buf? dataPalette
+    Buf? dataAlpha
 
     // process img data
     switch (png.colorType)
@@ -43,11 +46,13 @@ internal const class PdfGxImg
 
       case 2:
         // 8/16-bit RGB (no alpha)
-        data = [png.imgData]
+        dataPixels = png.imgData
 
       case 3:
         // indexed
-        throw Err("Not yet implemented")
+        arr := space as PdfArray
+        dataPixels  = png.imgData
+        dataPalette = arr[3]
 
       case 4:
         // grayscale w/ alpha
@@ -55,23 +60,34 @@ internal const class PdfGxImg
 
       case 6:
         // 8/16-bit RGB w/ alpha
-        data = splitAlpha(png)
+        temp := splitAlpha(png)
+        dataPixels = temp[0]
+        dataAlpha  = temp.getSafe(1)
     }
 
-    // base palete or rgb data
-    objs.add(PdfImage(png.uri, data[0]) {
+    // palette
+    if (dataPalette != null)
+    {
+      palette := PdfBufStream(dataPalette)
+      objs.add(palette)
+      arr := space as PdfArray
+      arr[3] = PdfObjRef(palette)
+    }
+
+    // pixel data
+    objs.add(PdfImage(png.uri, dataPixels) {
       it.set("Width",  iw)
       it.set("Height", ih)
-      it.set("ColorSpace", "/${space}")
+      it.set("ColorSpace", space)
       it.set("BitsPerComponent", bits)
       it.set("Filter", "/FlateDecode")
     })
 
     // alpha mask
-    if (data.size > 1)
+    if (dataAlpha != null)
     {
       auri  := `${png.uri}#alpha`
-      alpha := PdfImage(auri, data[1]) {
+      alpha := PdfImage(auri, dataAlpha) {
         it.set("Width",  iw)
         it.set("Height", ih)
         it.set("BitsPerComponent", 8)
@@ -79,8 +95,8 @@ internal const class PdfGxImg
         it.set("ColorSpace", "/DeviceGray")
         it.set("Decode",     PdfArray().add(0).add(1))
       }
-      rgb := objs.first
-      rgb.set("SMask", PdfObjRef(alpha))
+      pixels := objs[-1] as PdfImage
+      pixels.set("SMask", PdfObjRef(alpha))
       objs.add(alpha)
     }
 
@@ -88,15 +104,26 @@ internal const class PdfGxImg
   }
 
   ** Get color space for image.
-  private static Str colorSpace(Image img)
+  private static Obj colorSpace(PngImage png)
   {
-    cs := img["colorSpace"]
+    if (png.colorType == 3)
+    {
+      // indexed
+      arr := PdfArray()
+      arr.add("/Indexed")
+      arr.add("/DeviceRGB")
+      arr.add((png.palette.size / 3) - 1)
+      arr.add(png.palette)
+      return arr
+    }
+
+    cs := png["colorSpace"]
     switch(cs)
     {
-      case "Gray":  return "DeviceGray"
-      case "RGB":   return "DeviceRGB"
-      case "YCbCr": return "DeviceRGB"
-      case "CMYK":  return "DeviceCMYK"
+      case "Gray":  return "/DeviceGray"
+      case "RGB":   return "/DeviceRGB"
+      case "YCbCr": return "/DeviceRGB"
+      case "CMYK":  return "/DeviceCMYK"
       default: throw ArgErr("Unsupported color space: ${cs}")
     }
   }

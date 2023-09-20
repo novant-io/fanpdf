@@ -50,6 +50,10 @@ class PdfTest
     img = GraphicsEnv.cur.image(png.uri)
     gx.drawImage(img, 264f, 264f, 32f, 32f)
 
+    png = Env.cur.workDir + `test/bar.png`
+    img = GraphicsEnv.cur.image(png.uri)
+    gx.drawImage(img, 400f, 400f, 100f, 100f)
+
     page.addContent(gx.toPdfObj)
 
     out := Env.cur.out

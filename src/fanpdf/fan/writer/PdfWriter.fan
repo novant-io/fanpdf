@@ -110,7 +110,8 @@ class PdfWriter
     if (val is PdfImage)  return writeImage(val) // must be before PdfDict
     if (val is PdfDict)   return writeDict(val)
     if (val is PdfRect)   return writeRect(val)
-    if (val is PdfStream) return writeStream(val)
+    if (val is PdfStrStream) return writeStrStream(val)
+    if (val is PdfBufStream) return writeBufStream(val)
     if (val is Str)       return w(val)
     if (val is Int)       return w(val.toStr)
     throw ArgErr("Unsupported value type '${val.typeof}'")
@@ -164,11 +165,23 @@ class PdfWriter
   }
 
   ** Write a stream object.s
-  private This writeStream(PdfStream stream)
+  private This writeStrStream(PdfStrStream stream)
   {
     w("<< /Length ${stream.text.size} >>\n")
     w("stream\n")
     w(stream.text)
+    w("\nendstream")
+    return this
+  }
+
+  ** Write a buf stream object.
+  private This writeBufStream(PdfBufStream stream)
+  {
+    dict := PdfDict()
+    dict["Length"] = stream.buf.size
+    writeDict(dict)
+    w("\nstream\n")
+    for (i := 0; i<stream.buf.size; i++) write(stream.buf[i])
     w("\nendstream")
     return this
   }
