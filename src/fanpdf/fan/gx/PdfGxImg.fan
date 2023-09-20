@@ -53,6 +53,14 @@ internal const class PdfGxImg
         arr := space as PdfArray
         dataPixels  = png.imgData
         dataPalette = arr[3]
+        if (png.hasTransparency)
+        {
+          alpha  := Buf(iw * ih)
+          pixels := png.pixels
+          trans  := png.transparency
+          (0..<pixels.size).each |i| { alpha.write(trans[pixels[i]]) }
+          dataAlpha = PdfGxImg.deflate(alpha.flip)
+        }
 
       case 4:
         // grayscale w/ alpha
