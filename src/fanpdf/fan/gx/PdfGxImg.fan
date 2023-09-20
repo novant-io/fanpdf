@@ -21,6 +21,8 @@ internal const class PdfGxImg
   ** alpha channel mask for image.
   static PdfObj[] encodeImage(Image img)
   {
+    // TODO FIXIT: this logic is overly-complicated and should get cleaned up
+
     // sanity check we have backing data
     if (!img.isLoaded) throw ArgErr("Image not loaded")
 
@@ -90,6 +92,17 @@ internal const class PdfGxImg
       it.set("BitsPerComponent", bits)
       it.set("Filter", "/FlateDecode")
     })
+
+    // TODO FIXIT
+    if (!png.hasAlpha)
+    {
+      decode := PdfDict()
+      decode["Predictor"] = 15
+      decode["Colors"] = png.colors
+      decode["BitsPerComponent"] = bits
+      decode["Columns"] = iw
+      (objs.last as PdfImage).set("DecodeParms", decode)
+    }
 
     // alpha mask
     if (dataAlpha != null)
