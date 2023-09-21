@@ -65,7 +65,6 @@ class PdfGraphics : Graphics
     }
   }
 
-
   ** Current paint defines how text and shapes are stroked and filled.
   override Paint paint
   {
@@ -156,6 +155,36 @@ class PdfGraphics : Graphics
     this.w("${x+w} ${py(y)} l ")
     this.w("${x+w} ${py(y+h)} l ")
     this.w("${x} ${py(y+h)} l ")
+    this.w("f\n")
+    return this
+  }
+
+  // TODO: override
+  This drawOval(Float x, Float y, Float w, Float h)
+  {
+    w2 := w / 2
+    w3 := w * 2 / 3f
+    h2 := h / 2f
+    cx := x + w2
+    cy := y + h2
+    this.w("${cx} ${py(cy-h2)} m ")
+    this.w("${cx+w3} ${py(cy-h2)} ${cx+w3} ${py(cy+h2)} ${cx} ${py(cy+h2)} c ")
+    this.w("${cx-w3} ${py(cy+h2)} ${cx-w3} ${py(cy-h2)} ${cx} ${py(cy-h2)} c ")
+    this.w("s\n")
+    return this
+  }
+
+  // TODO: override
+  This fillOval(Float x, Float y, Float w, Float h)
+  {
+    w2 := w / 2
+    w3 := w * 2 / 3f
+    h2 := h / 2f
+    cx := x + w2
+    cy := y + h2
+    this.w("${cx} ${py(cy-h2)} m ")
+    this.w("${cx+w3} ${py(cy-h2)} ${cx+w3} ${py(cy+h2)} ${cx} ${py(cy+h2)} c ")
+    this.w("${cx-w3} ${py(cy+h2)} ${cx-w3} ${py(cy-h2)} ${cx} ${py(cy-h2)} c ")
     this.w("f\n")
     return this
   }

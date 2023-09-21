@@ -32,6 +32,12 @@ class PdfTest
     gx.color = Color("#3b82f6")
     gx.drawLine(46f, 46f, 400f, 400f)
 
+    gx.color = Color("#0f0")
+    gx.drawRect(300f, 100f, 200f, 100f)
+    gx.color = Color("#f00")
+    gx.drawOval(300f, 100f, 200f, 100f)
+    gx.fillOval(310f, 110f, 180f, 80f)
+
     // gx.font = Font("12pt Comic Sans")
     gx.font = Font("10pt Helvetica")
     gx.color = Color("#94a3b8")
