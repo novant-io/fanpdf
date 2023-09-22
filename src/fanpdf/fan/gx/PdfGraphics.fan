@@ -109,7 +109,8 @@ class PdfGraphics : Graphics
   ** Pop last graphics state of stack.
   override This pop()
   {
-    this.w("Q\n")
+    txstack.pop
+    return this.w("Q\n")
   }
 
   ** Convenience to clip the given the rectangle.
@@ -127,6 +128,14 @@ class PdfGraphics : Graphics
   override This translate(Float x, Float y)
   {
     this.w("1 0 0 1 ${x} -${y} cm\n")
+    return this
+  }
+
+  ** Apply transform to current state.
+  override This transform(Transform tx)
+  {
+    txstack.push(tx)
+    this.w("${tx.a} ${tx.b} ${tx.c} ${tx.d} ${tx.e} -${tx.f} cm\n")
     return this
   }
 
@@ -160,6 +169,7 @@ class PdfGraphics : Graphics
   }
 
   // TODO: override
+  ** Draw an oval within the given bounds.
   This drawOval(Float x, Float y, Float w, Float h)
   {
     w2 := w / 2
@@ -175,6 +185,7 @@ class PdfGraphics : Graphics
   }
 
   // TODO: override
+  ** Fill an oval within the given bounds.
   This fillOval(Float x, Float y, Float w, Float h)
   {
     w2 := w / 2
@@ -226,7 +237,6 @@ class PdfGraphics : Graphics
     font.metrics(deviceCx)
   }
 
-
   // TODO FIXIT
 
   override Float alpha   := 1f
@@ -237,15 +247,26 @@ class PdfGraphics : Graphics
   override This fillRoundRect(Float x, Float y, Float w, Float h, Float wArc, Float hArc) { throw Err() }
   override This clipRoundRect(Float x, Float y, Float w, Float h, Float wArc, Float hArc) { throw Err() }
   override GraphicsPath path() { throw Err() }
-  override This transform(Transform transform) { throw Err() }
 
   ** Get y value relative to pdf page (which is inverted from gx space).
-  private Float py(Float v) { size.h - v }
+  private Float py(Float v)
+  {
+    tx := txstack.last ?: defTx
+    if (tx.d == 1f) return size.h - v
+
+    // TODO FIXIT: this only works if we have a single transform
+    // and they are bounded by push/pop ops
+    return size.h / tx.d - v
+  }
 
   ** Write string to stream buf.
   private This w(Str s) { buf.add(s); return this }
 
   private DeviceContext deviceCx := DeviceContext(72f)
+
+  // TODO: see py()
+  private static const Transform defTx := Transform(1f, 0f, 0f, 1f, 0f, 0f)
+  private Transform[] txstack := [defTx]
 
   private PdfDoc doc               // parent doc instance
   private PdfPage page             // parent page instance

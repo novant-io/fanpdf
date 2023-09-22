@@ -56,6 +56,17 @@ class PdfTest
     img = GraphicsEnv.cur.image(png.uri)
     gx.drawImage(img, 264f, 264f, 32f, 32f)
 
+    gx.push
+    gx.translate(300f, 264f)
+    gx.drawImage(img, 0f, 0f, 32f, 32f)
+    gx.color = Color("#00f")
+    gx.drawRect(0f, 0f, 32f, 32f)
+    gx.transform(Transform.scale(3f, 3f))
+    gx.color = Color("#f00")
+    gx.drawRect(0f, 0f, 32f, 32f)
+    gx.drawImage(img, 0f, 0f, 32f, 32f)
+    gx.pop
+
     png = Env.cur.workDir + `test/bar.png`
     img = GraphicsEnv.cur.image(png.uri)
     gx.drawImage(img, 400f, 400f, 100f, 100f)
