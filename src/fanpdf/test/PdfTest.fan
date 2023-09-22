@@ -35,8 +35,12 @@ class PdfTest
     gx.color = Color("#0f0")
     gx.drawRect(300f, 100f, 200f, 100f)
     gx.color = Color("#f00")
-    gx.drawOval(300f, 100f, 200f, 100f)
-    gx.fillOval(310f, 110f, 180f, 80f)
+    gx.drawEllipse(300f, 100f, 200f, 100f)
+    gx.fillEllipse(310f, 110f, 180f, 80f)
+
+    gx.color = Color("#f00")
+    gx.drawEllipse(60f, 200f, 48f, 48f)
+    gx.fillEllipse(64f, 204f, 40f, 40f)
 
     // gx.font = Font("12pt Comic Sans")
     gx.font = Font("10pt Helvetica")

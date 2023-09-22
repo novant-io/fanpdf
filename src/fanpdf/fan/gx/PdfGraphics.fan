@@ -168,10 +168,10 @@ class PdfGraphics : Graphics
     return this
   }
 
-  // TODO: override
-  ** Draw an oval within the given bounds.
-  This drawOval(Float x, Float y, Float w, Float h)
+  ** Draw an ellipse within the given bounds.
+  override This drawEllipse(Float x, Float y, Float w, Float h)
   {
+    // TODO: this is bit janky; I think we need four curves
     w2 := w / 2
     w3 := w * 2 / 3f
     h2 := h / 2f
@@ -184,10 +184,10 @@ class PdfGraphics : Graphics
     return this
   }
 
-  // TODO: override
-  ** Fill an oval within the given bounds.
-  This fillOval(Float x, Float y, Float w, Float h)
+  ** Fill an ellipse within the given bounds.
+  override This fillEllipse(Float x, Float y, Float w, Float h)
   {
+    // TODO: this is bit janky; I think we need four curves
     w2 := w / 2
     w3 := w * 2 / 3f
     h2 := h / 2f
