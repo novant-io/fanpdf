@@ -243,10 +243,63 @@ class PdfGraphics : Graphics
   override Void dispose() { throw Err() }
 
   override This drawImageRegion(Image img, Rect src, Rect dst) { throw Err() }
-  override This drawRoundRect(Float x, Float y, Float w, Float h, Float wArc, Float hArc) { throw Err() }
-  override This fillRoundRect(Float x, Float y, Float w, Float h, Float wArc, Float hArc) { throw Err() }
-  override This clipRoundRect(Float x, Float y, Float w, Float h, Float wArc, Float hArc) { throw Err() }
   override GraphicsPath path() { throw Err() }
+
+  ** Draw a rectangle with rounded corners with the current stroke and paint
+  override This drawRoundRect(Float x, Float y, Float w, Float h, Float wArc, Float hArc)
+  {
+    roundRectPath(x, y, w, h, wArc, hArc)
+    this.w("s\n")
+    return this
+  }
+
+  ** Fill a rectangle with rounded corners with the current stroke and paint
+  override This fillRoundRect(Float x, Float y, Float w, Float h, Float wArc, Float hArc)
+  {
+    roundRectPath(x, y, w, h, wArc, hArc)
+    this.w("f\n")
+    return this
+  }
+
+  ** Clip a rectangle with rounded corners.
+  override This clipRoundRect(Float x, Float y, Float w, Float h, Float wArc, Float hArc)
+  {
+    roundRectPath(x, y, w, h, wArc, hArc)
+    this.w(" W n\n")
+    return this
+  }
+
+  ** Build a rounded rectangle path using cubic Bézier curves for the corners.
+  private Void roundRectPath(Float x, Float y, Float w, Float h, Float wArc, Float hArc)
+  {
+    // clamp radii
+    rx := wArc.min(w / 2f)
+    ry := hArc.min(h / 2f)
+
+    // kappa factor for approximating a quarter-circle with a cubic Bézier
+    k  := 0.5522847498f
+    kx := rx * k
+    ky := ry * k
+
+    // corner points
+    x0 := x; x1 := x + rx; x2 := x + w - rx; x3 := x + w
+    y0 := y; y1 := y + ry; y2 := y + h - ry; y3 := y + h
+
+    // move to start of top edge
+    this.w("${x1} ${py(y0)} m ")
+    // top edge -> top-right corner
+    this.w("${x2} ${py(y0)} l ")
+    this.w("${x2+kx} ${py(y0)} ${x3} ${py(y1-ky)} ${x3} ${py(y1)} c ")
+    // right edge -> bottom-right corner
+    this.w("${x3} ${py(y2)} l ")
+    this.w("${x3} ${py(y2+ky)} ${x2+kx} ${py(y3)} ${x2} ${py(y3)} c ")
+    // bottom edge -> bottom-left corner
+    this.w("${x1} ${py(y3)} l ")
+    this.w("${x1-kx} ${py(y3)} ${x0} ${py(y2+ky)} ${x0} ${py(y2)} c ")
+    // left edge -> top-left corner
+    this.w("${x0} ${py(y1)} l ")
+    this.w("${x0} ${py(y1-ky)} ${x1-kx} ${py(y0)} ${x1} ${py(y0)} c ")
+  }
 
   ** Get y value relative to pdf page (which is inverted from gx space).
   private Float py(Float v)
